@@ -10,16 +10,26 @@ public class Produto {
     private String name;
     private Integer quantity;
     private String classe;
+    private Integer price;
 
-    public Produto(Long id, String name, Integer quantity, String classe) {
+    public Produto(Long id, String name, Integer quantity, String classe, Integer price) {
         this.id = id;
         this.name = name;
         this.quantity = quantity;
         this.classe = classe;
+        this.price = price;
     }
 
     public Produto() {
 
+    }
+
+    public Integer getPrice() {
+        return price;
+    }
+
+    public void setPrice(Integer value) {
+        this.price = value;
     }
 
     public Long getId() {
