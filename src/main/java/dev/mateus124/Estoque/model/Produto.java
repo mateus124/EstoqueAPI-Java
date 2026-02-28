@@ -12,12 +12,17 @@ public class Produto {
     private String classe;
     private Integer price;
 
-    public Produto(Long id, String name, Integer quantity, String classe, Integer price) {
+    @ManyToOne
+    @JoinColumn(name = "provider_id")
+    private Fornecedor provider;
+
+    public Produto(Long id, String name, Integer quantity, String classe, Integer price, Fornecedor provider) {
         this.id = id;
         this.name = name;
         this.quantity = quantity;
         this.classe = classe;
         this.price = price;
+        this.provider = provider;
     }
 
     public Produto() {
@@ -62,5 +67,13 @@ public class Produto {
 
     public void setClasse(String classe) {
         this.classe = classe;
+    }
+
+    public Fornecedor getProvider() {
+        return provider;
+    }
+
+    public void setProvider(Fornecedor provider) {
+        this.provider = provider;
     }
 }

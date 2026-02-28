@@ -32,6 +32,7 @@ public class ProdutoService {
                     produto.setQuantity(newProduct.getQuantity());
                     produto.setPrice(newProduct.getPrice());
                     produto.setClasse(newProduct.getClasse());
+                    produto.setProvider(newProduct.getProvider());
                     return produtoRepository.save(produto);
                 })
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado!"));
