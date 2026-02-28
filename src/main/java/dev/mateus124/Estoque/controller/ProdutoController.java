@@ -1,4 +1,5 @@
 package dev.mateus124.Estoque.controller;
+import dev.mateus124.Estoque.dto.ProdutoRequest;
 import dev.mateus124.Estoque.model.Produto;
 import dev.mateus124.Estoque.service.ProdutoService;
 import org.springframework.http.ResponseEntity;
@@ -7,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/estoque")
+@RequestMapping("/produto")
 public class ProdutoController {
     private final ProdutoService produtoService;
 
@@ -28,7 +29,7 @@ public class ProdutoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Produto> update(@PathVariable Long id, @RequestBody Produto produto) {
+    public ResponseEntity<Produto> update(@PathVariable Long id, @RequestBody ProdutoRequest produto) {
         try {
             Produto updated = produtoService.update(id, produto);
             return ResponseEntity.ok(updated);
@@ -48,7 +49,7 @@ public class ProdutoController {
     }
 
     @PostMapping
-    public Produto create(@RequestBody Produto product) {
+    public Produto create(@RequestBody ProdutoRequest product) {
         return produtoService.save(product);
     }
 
