@@ -59,19 +59,47 @@ public class CompraService {
     }
 
     public Compra update(long id, CompraRequest novaCompra) {
-        Produto produto = produtoRepository.findById(novaCompra.getProdutoId())
+        Compra compraExistente = compraRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Compra não encontrada!"));
+
+        Produto novoProduto = produtoRepository.findById(novaCompra.getProdutoId())
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado!"));
 
-        return compraRepository.findById(id)
-                .map(compra -> {
-                    Double valorTotal = (double) (novaCompra.getQuantidade() * produto.getPrice());
-                    compra.setNomeCliente(novaCompra.getNomeCliente());
-                    compra.setProduto(produto);
-                    compra.setQuantidade(novaCompra.getQuantidade());
-                    compra.setValorTotal(valorTotal);
-                    return compraRepository.save(compra);
-                })
-                .orElseThrow(() -> new RuntimeException("Compra não encontrada!"));
+        Integer quantidadeSolicitada = novaCompra.getQuantidade();
+        if (quantidadeSolicitada == null || quantidadeSolicitada <= 0) {
+            throw new RuntimeException("Quantidade inválida!");
+        }
+
+        if (novoProduto.getPrice() == null) {
+            throw new RuntimeException("Produto sem preço definido!");
+        }
+
+        Produto produtoAntigo = compraExistente.getProduto();
+        Integer quantidadeAntiga = compraExistente.getQuantidade();
+
+        produtoService.updateQuanttity(produtoAntigo.getId(), 
+            produtoAntigo.getQuantity() + quantidadeAntiga);
+
+        Produto produtoAtualizado = produtoRepository.findById(novoProduto.getId())
+                .orElseThrow(() -> new RuntimeException("Produto não encontrado!"));
+        Integer estoqueDisponivel = produtoAtualizado.getQuantity();
+
+        if (estoqueDisponivel == null || estoqueDisponivel <= 0) {
+            throw new RuntimeException("Produto sem estoque!");
+        }
+
+        Integer quantidadeComprada = Math.min(quantidadeSolicitada, estoqueDisponivel);
+        Double valorTotal = (double) (quantidadeComprada * novoProduto.getPrice());
+
+        produtoService.updateQuanttity(novoProduto.getId(), 
+            estoqueDisponivel - quantidadeComprada);
+
+        compraExistente.setNomeCliente(novaCompra.getNomeCliente());
+        compraExistente.setProduto(novoProduto);
+        compraExistente.setQuantidade(quantidadeComprada);
+        compraExistente.setValorTotal(valorTotal);
+
+        return compraRepository.save(compraExistente);
     }
 
     public void delete(Long id) {
