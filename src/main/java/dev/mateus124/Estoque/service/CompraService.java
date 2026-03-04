@@ -103,6 +103,15 @@ public class CompraService {
     }
 
     public void delete(Long id) {
+        Compra compra = compraRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Compra não encontrada!"));
+
+        Produto produto = compra.getProduto();
+        Integer quantidadeComprada = compra.getQuantidade();
+
+        produtoService.updateQuanttity(produto.getId(), 
+            produto.getQuantity() + quantidadeComprada);
+
         compraRepository.deleteById(id);
     }
 }
